@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Профайл пользователя {{ first_post.author.get_full_name }}
+{% endblock %}
+
+{% block content %}
+  <div class="container py-5">
+    <h1>Все посты пользователя {{ first_post.author.get_full_name }} </h1>
+    <h3>Всего постов: {{ col_posts }} </h3>
+    <article>
+      <ul>
+        <li>
+          Автор: {{ first_post.author.get_full_name }}
+          <a href="{% url 'posts:profile' first_post.author %}">все посты пользователя</a>
+        </li>
+        <li>
+          Дата публикации: {{ first_post.pub_date|date:"d E Y" }}
+        </li>
+      </ul>
+      <p>
+      {{ first_post.text }}
+      {% if request.user == first_post.author %}
+        <a href="{% url 'posts:post_edit' first_post.pk %}">edit</a>
+      {% endif %}
+      </p>
+      <a href="{% url 'posts:post_detail' first_post.pk %}">подробная информация </a>
+    </article>
+    {% if post.group %}
+      <a href="{% url 'posts:group' first_post.group.slug %}">все записи группы</a>
+    {% endif %}
+    <hr>
+    {% for post in page_obj %}
+      <p>
+        {{ post.text }}
+        {% if request.user == post.author %}
+          <a href="{% url 'posts:post_edit' post.pk %}">edit</a>
+        {% endif %}
+      </p>
+      <p>Дата публикации: {{ post.pub_date|date:"d E Y" }}</p>
+      {% if not forloop.last %}<hr>{% endif %}
+    {% endfor %}
+
+    {% include 'posts/includes/paginator.html' %}
+  </div>
+{% endblock %}
